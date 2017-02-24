@@ -14,6 +14,11 @@ const development = plugins.environments.development;
 const production = plugins.environments.production;
 
 const config = {
+
+  index: "./src/index.html",
+
+  dest: "./web/",
+
   vendorAssets: [
     {
       src: "bootstrap/dist",
@@ -32,7 +37,7 @@ function filterVendors(paths, file){
 }
 
 // styles.pipe(plugins.debug());
-
+// // .pipe(plugins.debug())
 gulp.task('default', function(done) {
 
   const copiedVendorAssets = config.vendorAssets.map(f => {
@@ -40,13 +45,17 @@ gulp.task('default', function(done) {
     const filterJS = plugins.filter(fn => filterVendors(f.js, fn));
 
     const copiedFiles = gulp.src("node_modules/" + f.src + '/**/*')
-                            // .pipe(plugins.debug())
                             .pipe(gulp.dest('web/vendors/' + f.dest));
 
-    return {styles: copiedFiles.pipe(filterStyles), js: copiedFiles.pipe(filterJS)};
+    return plugins.merge(copiedFiles.pipe(filterStyles), copiedFiles.pipe(filterJS));
   });
 
-  
+  const mergedAssets = plugins.merge.apply(null, copiedVendorAssets);
+  const index = gulp.src(config.index);
+
+  index
+    .pipe( plugins.inject(mergedAssets, {ignorePath: "/web"}) )
+    .pipe( gulp.dest(config.dest) );
 
   done();
 });
