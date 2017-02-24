@@ -6,6 +6,7 @@
  - Compile Angular templates to JavaScript
  */
 
+const _ = require("lodash");
 const gulp = require('gulp');
 const plugins = require('gulp-load-plugins')();
 
@@ -15,23 +16,37 @@ const production = plugins.environments.production;
 const config = {
   vendorAssets: [
     {
-      src: "bootstrap/dist/css",
-      dest: "bootstrap/css",
-      styles: ["bootstrap.min.css"],
+      src: "bootstrap/dist",
+      dest: "bootstrap",
+      styles: ["css/bootstrap.min.css"],
       js: []
     }
   ]
 };
 
+function filterVendors(paths, file){
+  return _.find(paths, p => {
+    const re = new RegExp(p + "$");
+    return re.test(file.path);
+  });
+}
+
+// styles.pipe(plugins.debug());
+
 gulp.task('default', function(done) {
-  plugins.util.log("It worked!");
 
-  config.vendorAssets.forEach(f => {
-    
-    gulp.src("node_modules/" + f.src + '/**/*')
-        .pipe(plugins.debug())
+  const copiedVendorAssets = config.vendorAssets.map(f => {
+    const filterStyles = plugins.filter(fn => filterVendors(f.styles, fn));
+    const filterJS = plugins.filter(fn => filterVendors(f.js, fn));
 
-  })
+    const copiedFiles = gulp.src("node_modules/" + f.src + '/**/*')
+                            // .pipe(plugins.debug())
+                            .pipe(gulp.dest('web/vendors/' + f.dest));
+
+    return {styles: copiedFiles.pipe(filterStyles), js: copiedFiles.pipe(filterJS)};
+  });
+
+  
 
   done();
 });
