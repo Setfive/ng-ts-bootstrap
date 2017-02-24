@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "gulp": "^3.9.1",
+    "bootstrap": "^3.3.7",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-debug": "^3.1.0",
+    "gulp-environments": "^0.1.1",
+    "gulp-inject": "^4.2.0",
     "gulp-load-plugins": "^1.5.0",
     "gulp-logger": "0.0.2",
     "gulp-util": "^3.0.8"
-  },
-  "devDependencies": {
-    "gulp": "^3.9.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
