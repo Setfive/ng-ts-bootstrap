@@ -15,6 +15,7 @@ const production = plugins.environments.production;
 
 const config = {
 
+  src: "./src",
   index: "./src/index.html",
 
   dest: "./web/",
@@ -27,6 +28,7 @@ const config = {
       js: []
     }
   ]
+
 };
 
 function filterVendors(paths, file){
@@ -56,6 +58,9 @@ gulp.task('default', function(done) {
   index
     .pipe( plugins.inject(mergedAssets, {ignorePath: "/web"}) )
     .pipe( gulp.dest(config.dest) );
+
+  gulp.src( config.src + "/public/**/*" )
+      .pipe( gulp.dest(config.dest) );
 
   done();
 });
