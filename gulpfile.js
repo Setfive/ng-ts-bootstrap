@@ -39,7 +39,19 @@ function filterVendors(paths, file){
 }
 
 // styles.pipe(plugins.debug());
-// // .pipe(plugins.debug())
+// .pipe(plugins.debug())
+
+gulp.task('less', function(done) {
+
+  gulp
+    .src(config.src + "/**/*.less")
+    .pipe(plugins.less())
+    .pipe(plugins.flatten())
+    .pipe(gulp.dest('web/css'));
+
+  done();
+});
+
 gulp.task('default', function(done) {
 
   const copiedVendorAssets = config.vendorAssets.map(f => {
@@ -52,11 +64,18 @@ gulp.task('default', function(done) {
     return plugins.merge(copiedFiles.pipe(filterStyles), copiedFiles.pipe(filterJS));
   });
 
-  const mergedAssets = plugins.merge.apply(null, copiedVendorAssets);
+  const projectCSS = gulp
+                      .src(config.src + "/**/*.less")
+                      .pipe(plugins.less())
+                      .pipe(plugins.flatten())
+                      .pipe(gulp.dest('web/css'))
+  ;
+
+  const mergedAssets = plugins.merge.apply(null, [copiedVendorAssets, projectCSS]);
   const index = gulp.src(config.index);
 
   index
-    .pipe( plugins.inject(mergedAssets, {ignorePath: "/web"}) )
+    .pipe( plugins.inject(mergedAssets, {ignorePath: ["/web"]}) )
     .pipe( gulp.dest(config.dest) );
 
   gulp.src( config.src + "/public/**/*" )
