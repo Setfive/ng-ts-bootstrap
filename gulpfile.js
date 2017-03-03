@@ -46,6 +46,9 @@ gulp.task('less', function(done) {
   return gulp
     .src(config.src + "/**/*.less")
     .pipe(plugins.less())
+    .pipe(plugins.rename(function(path) {
+      path.basename = path.dirname.toLowerCase() + "_" + path.basename;
+    }))
     .pipe(plugins.flatten())
     .pipe(gulp.dest('web/css'));
 });
@@ -75,7 +78,7 @@ gulp.task('index', function(done) {
     const vendorFiles = gulp.src('web/vendors/' + f.dest + "/**/*");
     return [vendorFiles.pipe(filterStyles), vendorFiles.pipe(filterJS)];
   });
-  
+
   const mergedAssets = merge2(_.flatten(copiedVendorAssets), gulp.src('web/css/**/*'));
 
   gulp.src(config.index)
@@ -92,39 +95,3 @@ gulp.task('index', function(done) {
 gulp.task('default', gulp.series('clean', 'vendors', 'less', 'index', function(done) {
   done();
 }));
-
-gulp.task('default_working', function(done) {
-
-  const copiedVendorAssets = config.vendorAssets.map(f => {
-    const filterStyles = plugins.filter(fn => filterVendors(f.styles, fn));
-    const filterJS = plugins.filter(fn => filterVendors(f.js, fn));
-
-    const copiedFiles = gulp.src("node_modules/" + f.src + '/**/*')
-                            .pipe(gulp.dest('web/vendors/' + f.dest));
-
-    return [copiedFiles.pipe(filterStyles), copiedFiles.pipe(filterJS)];
-  });
-
-  const projectCSS = gulp
-                      .src(config.src + "/**/*.less")
-                      .pipe(plugins.less())
-                      .pipe(plugins.flatten())
-                      .pipe(gulp.dest('web/css'))
-                      .pipe(plugins.debug())
-  ;
-
-
-  const mergedAssets = merge2(_.flatten(copiedVendorAssets), projectCSS);
-
-  gulp.src(config.index)
-      .pipe( plugins.inject(mergedAssets, {ignorePath: ["/web"]}) )
-      .pipe( gulp.dest(config.dest) )
-  ;
-
-  gulp.src( config.src + "/public/**/*" )
-      .pipe(plugins.debug())
-      .pipe( gulp.dest(config.dest) );
-  ;
-
-  done();
-});
