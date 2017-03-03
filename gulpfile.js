@@ -1,5 +1,5 @@
 /**
- - Compile LESS files to CSS, combine, minify (in production)
+ - Compile LESS files to CSS, combine, minify (in production) - use .pipe(gulpif(condition, uglify()))
  - Compiles LESS to CSS, leave unminified (in dev)
  - Transpile TypeScript to ES5 via Browserify
  - Combine and minify ES5 for prod via Browserify
@@ -26,7 +26,7 @@ const config = {
 
   src: "./src",
   index: "./src/index.html",
-  aopEntry: "./src/app.ts",
+  appEntry: "./src/app.ts",
 
   dest: "./web",
 
@@ -36,7 +36,18 @@ const config = {
       dest: "bootstrap",
       styles: ["css/bootstrap.min.css"],
       js: []
+    },
+    {
+      src: "jquery/dist",
+      dest: "jquery",
+      styles: [],
+      js: ['jquery.min.js']
     }
+  ],
+
+  browserifyLibs: [
+    "angular",
+    "angular-ui-router"
   ]
 
 };
@@ -47,6 +58,8 @@ function filterVendors(paths, file){
     return re.test(file.path);
   });
 }
+
+
 
 gulp.task('less', function(done) {
   return gulp
@@ -77,15 +90,37 @@ gulp.task('vendors', function(done) {
   return merge2(_.flatten(copiedVendorAssets));
 });
 
+gulp.task('js-libs', function () {
+  const b = browserify({ debug: true });
+
+  config.browserifyLibs.forEach(function(lib) {
+    b.require(lib);
+  });
+
+  return b.bundle()
+          .on('error', console.error)
+          .pipe(source('./libs.js'))
+          .pipe(buffer())
+          .pipe(plugins.uglify())
+          .pipe(plugins.rename("libs.js"))
+          .pipe(gulp.dest(config.dest + '/js'))
+    ;
+});
+
 gulp.task('ts', function(done) {
   var b = browserify({
-    entries: config.aopEntry,
+    entries: config.appEntry,
     debug: true,
+  });
+
+  config.browserifyLibs.forEach(function(lib) {
+    b.external(lib);
   });
 
   return b.plugin('tsify', {target: 'es6'})
           .bundle()
-          .pipe(source(config.aopEntry))
+          .on('error', console.error)
+          .pipe(source("./app.ts"))
           .pipe(buffer())
           .pipe(plugins.rename("app.js"))
           .pipe(gulp.dest(config.dest + '/js'));
@@ -99,7 +134,15 @@ gulp.task('index', function(done) {
     return [vendorFiles.pipe(filterStyles), vendorFiles.pipe(filterJS)];
   });
 
-  const mergedAssets = merge2(_.flatten(copiedVendorAssets), gulp.src(config.dest + '/css/**/*'));
+  const jsFiles = gulp
+                    .src(config.dest + '/js/**/*')
+                    .pipe(plugins.debug())
+                    .pipe(plugins.order([
+                      'web/js/libs.js',
+                      'web/js/**/*'
+                    ]));
+
+  const mergedAssets = merge2(_.flatten(copiedVendorAssets), gulp.src(config.dest + '/css/**/*'), jsFiles);
 
   gulp.src(config.index)
     .pipe( plugins.inject(mergedAssets, {ignorePath: ["/web"]}) )
@@ -112,6 +155,6 @@ gulp.task('index', function(done) {
   ;
 });
 
-gulp.task('default', gulp.series('clean', 'vendors', 'less', 'index', function(done) {
+gulp.task('default', gulp.series('clean', 'vendors', 'less', 'js-libs', 'ts', 'index', function(done) {
   done();
 }));
