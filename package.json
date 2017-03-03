@@ -7,6 +7,7 @@
     "angular": "^1.6.2",
     "angular-ui-router": "^1.0.0-rc.1",
     "bootstrap": "^3.3.7",
+    "browserify": "^14.1.0",
     "del": "^2.2.2",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-debug": "^3.1.0",
@@ -23,7 +24,11 @@
     "gulp-util": "^3.0.8",
     "jquery": "^3.1.1",
     "lodash": "^4.17.4",
-    "merge2": "^1.0.3"
+    "merge2": "^1.0.3",
+    "tsify": "^3.0.1",
+    "typescript": "^2.2.1",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

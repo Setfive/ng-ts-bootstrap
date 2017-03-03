@@ -11,6 +11,11 @@ const gulp = require('gulp');
 const plugins = require('gulp-load-plugins')();
 const del = require('del');
 const merge2 = require("merge2");
+const browserify = require('browserify');
+const tsify = require('tsify');
+const source = require('vinyl-source-stream');
+const buffer = require('vinyl-buffer');
+const sourcemaps = require('gulp-sourcemaps');
 
 const development = plugins.environments.development;
 const production = plugins.environments.production;
@@ -21,6 +26,7 @@ const config = {
 
   src: "./src",
   index: "./src/index.html",
+  aopEntry: "./src/app.ts",
 
   dest: "./web",
 
@@ -50,7 +56,7 @@ gulp.task('less', function(done) {
       path.basename = path.dirname.toLowerCase() + "_" + path.basename;
     }))
     .pipe(plugins.flatten())
-    .pipe(gulp.dest('web/css'));
+    .pipe(gulp.dest(config.dest + '/css'));
 });
 
 gulp.task('clean', function(done) {
@@ -58,7 +64,6 @@ gulp.task('clean', function(done) {
 });
 
 gulp.task('vendors', function(done) {
-
   const copiedVendorAssets = config.vendorAssets.map(f => {
     const filterStyles = plugins.filter(fn => filterVendors(f.styles, fn));
     const filterJS = plugins.filter(fn => filterVendors(f.js, fn));
@@ -72,15 +77,29 @@ gulp.task('vendors', function(done) {
   return merge2(_.flatten(copiedVendorAssets));
 });
 
+gulp.task('ts', function(done) {
+  var b = browserify({
+    entries: config.aopEntry,
+    debug: true,
+  });
+
+  return b.plugin('tsify', {target: 'es6'})
+          .bundle()
+          .pipe(source(config.aopEntry))
+          .pipe(buffer())
+          .pipe(plugins.rename("app.js"))
+          .pipe(gulp.dest(config.dest + '/js'));
+});
+
 gulp.task('index', function(done) {
   const copiedVendorAssets = config.vendorAssets.map(f => {
     const filterStyles = plugins.filter(fn => filterVendors(f.styles, fn));
     const filterJS = plugins.filter(fn => filterVendors(f.js, fn));
-    const vendorFiles = gulp.src('web/vendors/' + f.dest + "/**/*");
+    const vendorFiles = gulp.src(config.dest + '/vendors/' + f.dest + "/**/*");
     return [vendorFiles.pipe(filterStyles), vendorFiles.pipe(filterJS)];
   });
 
-  const mergedAssets = merge2(_.flatten(copiedVendorAssets), gulp.src('web/css/**/*'));
+  const mergedAssets = merge2(_.flatten(copiedVendorAssets), gulp.src(config.dest + '/css/**/*'));
 
   gulp.src(config.index)
     .pipe( plugins.inject(mergedAssets, {ignorePath: ["/web"]}) )
