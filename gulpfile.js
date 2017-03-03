@@ -9,6 +9,8 @@
 const _ = require("lodash");
 const gulp = require('gulp');
 const plugins = require('gulp-load-plugins')();
+const del = require('del');
+const merge2 = require("merge2");
 
 const development = plugins.environments.development;
 const production = plugins.environments.production;
@@ -52,6 +54,10 @@ gulp.task('less', function(done) {
   done();
 });
 
+gulp.task('clean', function(done) {
+  return del([config.dest + "/**/*"]);
+});
+
 gulp.task('default', function(done) {
 
   const copiedVendorAssets = config.vendorAssets.map(f => {
@@ -61,7 +67,7 @@ gulp.task('default', function(done) {
     const copiedFiles = gulp.src("node_modules/" + f.src + '/**/*')
                             .pipe(gulp.dest('web/vendors/' + f.dest));
 
-    return plugins.merge(copiedFiles.pipe(filterStyles), copiedFiles.pipe(filterJS));
+    return [copiedFiles.pipe(filterStyles), copiedFiles.pipe(filterJS)];
   });
 
   const projectCSS = gulp
@@ -69,17 +75,21 @@ gulp.task('default', function(done) {
                       .pipe(plugins.less())
                       .pipe(plugins.flatten())
                       .pipe(gulp.dest('web/css'))
+                      .pipe(plugins.debug())
   ;
 
-  const mergedAssets = plugins.merge.apply(null, [copiedVendorAssets, projectCSS]);
-  const index = gulp.src(config.index);
 
-  index
-    .pipe( plugins.inject(mergedAssets, {ignorePath: ["/web"]}) )
-    .pipe( gulp.dest(config.dest) );
+  const mergedAssets = merge2(_.flatten(copiedVendorAssets), projectCSS);
+
+  gulp.src(config.index)
+      .pipe( plugins.inject(mergedAssets, {ignorePath: ["/web"]}) )
+      .pipe( gulp.dest(config.dest) )
+  ;
 
   gulp.src( config.src + "/public/**/*" )
+      .pipe(plugins.debug())
       .pipe( gulp.dest(config.dest) );
+  ;
 
   done();
 });
