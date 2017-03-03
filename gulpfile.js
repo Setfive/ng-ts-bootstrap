@@ -15,12 +15,14 @@ const merge2 = require("merge2");
 const development = plugins.environments.development;
 const production = plugins.environments.production;
 
+// .pipe(plugins.debug())
+
 const config = {
 
   src: "./src",
   index: "./src/index.html",
 
-  dest: "./web/",
+  dest: "./web",
 
   vendorAssets: [
     {
@@ -40,8 +42,6 @@ function filterVendors(paths, file){
   });
 }
 
-// .pipe(plugins.debug())
-
 gulp.task('less', function(done) {
   return gulp
     .src(config.src + "/**/*.less")
@@ -58,12 +58,13 @@ gulp.task('clean', function(done) {
 });
 
 gulp.task('vendors', function(done) {
+
   const copiedVendorAssets = config.vendorAssets.map(f => {
     const filterStyles = plugins.filter(fn => filterVendors(f.styles, fn));
     const filterJS = plugins.filter(fn => filterVendors(f.js, fn));
 
     const copiedFiles = gulp.src("node_modules/" + f.src + '/**/*')
-                            .pipe(gulp.dest('web/vendors/' + f.dest));
+                            .pipe(gulp.dest(config.dest + '/vendors/' + f.dest));
 
     return [copiedFiles.pipe(filterStyles), copiedFiles.pipe(filterJS)];
   });
@@ -83,12 +84,12 @@ gulp.task('index', function(done) {
 
   gulp.src(config.index)
     .pipe( plugins.inject(mergedAssets, {ignorePath: ["/web"]}) )
-    .pipe( gulp.dest(config.dest) )
+    .pipe( gulp.dest(config.dest + "/") )
   ;
 
   return gulp.src( config.src + "/public/**/*" )
     .pipe(plugins.debug())
-    .pipe( gulp.dest(config.dest) );
+    .pipe( gulp.dest(config.dest + "/") );
   ;
 });
 
