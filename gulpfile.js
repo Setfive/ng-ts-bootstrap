@@ -136,12 +136,11 @@ gulp.task('index', function(done) {
 
   const jsFiles = gulp
                     .src(config.dest + '/js/**/*')
-                    .pipe(plugins.debug())
                     .pipe(plugins.order([
-                      'web/js/app.js',
-                      'web/js/libs.js',
+                      'libs.js',
+                      'app.js',
                     ]))
-                    .pipe(plugins.debug())
+                    // .pipe(plugins.debug())
     ;
 
   const mergedAssets = merge2(_.flatten(copiedVendorAssets), gulp.src(config.dest + '/css/**/*'), jsFiles);
@@ -152,8 +151,7 @@ gulp.task('index', function(done) {
   ;
 
   return gulp.src( config.src + "/public/**/*" )
-    .pipe(plugins.debug())
-    .pipe( gulp.dest(config.dest + "/") );
+             .pipe( gulp.dest(config.dest + "/") );
   ;
 });
 
