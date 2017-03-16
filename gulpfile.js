@@ -16,6 +16,7 @@ const tsify = require('tsify');
 const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const sourcemaps = require('gulp-sourcemaps');
+const inlineAngularTemplates = require('gulp-inline-angular-templates');
 
 const development = plugins.environments.development;
 const production = plugins.environments.production;
@@ -58,8 +59,6 @@ function filterVendors(paths, file){
     return re.test(file.path);
   });
 }
-
-
 
 gulp.task('less', function(done) {
   return gulp
@@ -126,6 +125,18 @@ gulp.task('ts', function(done) {
           .pipe(gulp.dest(config.dest + '/js'));
 });
 
+gulp.task('templates', function(done) {
+  return gulp
+          .src(config.src + "/**/*.tpl")
+          .pipe(inlineAngularTemplates(config.dest + "/index.html", {base: "src/"}))
+          .pipe(gulp.dest(config.dest + "/"));
+});
+
+gulp.task("assets", function(){
+  return gulp.src( config.src + "/public/**/*" )
+             .pipe( gulp.dest(config.dest + "/") )
+});
+
 gulp.task('index', function(done) {
   const copiedVendorAssets = config.vendorAssets.map(f => {
     const filterStyles = plugins.filter(fn => filterVendors(f.styles, fn));
@@ -138,31 +149,28 @@ gulp.task('index', function(done) {
                     .src(config.dest + '/js/**/*')
                     .pipe(plugins.order([
                       'libs.js',
+                      'templates.js',
                       'app.js',
                     ]))
     ;
 
   const mergedAssets = merge2(_.flatten(copiedVendorAssets), gulp.src(config.dest + '/css/**/*'), jsFiles);
 
-  gulp.src(config.index)
-    .pipe( plugins.inject(mergedAssets, {ignorePath: ["/web"]}) )
-    .pipe( gulp.dest(config.dest + "/") )
+  return gulp.src(config.index)
+             .pipe( plugins.inject(mergedAssets, {ignorePath: ["/web"]}) )
+             .pipe( gulp.dest(config.dest + "/") )
   ;
 
-  return gulp.src( config.src + "/public/**/*" )
-             .pipe( gulp.dest(config.dest + "/") );
-  ;
 });
 
 gulp.task("watch", function(done){
   gulp.watch(config.src + "/**/*.ts", gulp.series("ts"));
   gulp.watch(config.src + "/**/*.less", gulp.series("less"));
+  gulp.watch(config.src + "/**/*.tpl", gulp.series("index", "templates"));
 
   return new Promise(function (resolve, reject) {
 
   });
 });
 
-gulp.task('default', gulp.series('clean', 'vendors', 'less', 'js-libs', 'ts', 'index', function(done) {
-  done();
-}));
+gulp.task('default', gulp.series('clean', 'vendors', 'less', 'js-libs', 'ts', 'assets', 'index', 'templates'));
