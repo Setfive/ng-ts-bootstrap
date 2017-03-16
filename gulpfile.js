@@ -138,9 +138,11 @@ gulp.task('index', function(done) {
                     .src(config.dest + '/js/**/*')
                     .pipe(plugins.debug())
                     .pipe(plugins.order([
+                      'web/js/app.js',
                       'web/js/libs.js',
-                      'web/js/**/*'
-                    ]));
+                    ]))
+                    .pipe(plugins.debug())
+    ;
 
   const mergedAssets = merge2(_.flatten(copiedVendorAssets), gulp.src(config.dest + '/css/**/*'), jsFiles);
 
