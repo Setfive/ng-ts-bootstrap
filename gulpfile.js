@@ -157,6 +157,15 @@ gulp.task('index', function(done) {
   ;
 });
 
+gulp.task("watch", function(done){
+  gulp.watch(config.src + "/**/*.ts", gulp.series("ts"));
+  gulp.watch(config.src + "/**/*.less", gulp.series("less"));
+
+  return new Promise(function (resolve, reject) {
+
+  });
+});
+
 gulp.task('default', gulp.series('clean', 'vendors', 'less', 'js-libs', 'ts', 'index', function(done) {
   done();
 }));

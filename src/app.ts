@@ -13,6 +13,6 @@ angular
         console.log(l);
     })
     .config(function MyAppRunConfig($stateProvider: ng.ui.IStateProvider) {
-
+        console.log("in config!");
     })
 ;
