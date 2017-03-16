@@ -140,7 +140,6 @@ gulp.task('index', function(done) {
                       'libs.js',
                       'app.js',
                     ]))
-                    // .pipe(plugins.debug())
     ;
 
   const mergedAssets = merge2(_.flatten(copiedVendorAssets), gulp.src(config.dest + '/css/**/*'), jsFiles);
