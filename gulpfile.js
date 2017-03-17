@@ -48,7 +48,8 @@ const config = {
 
   browserifyLibs: [
     "angular",
-    "angular-ui-router"
+    "angular-ui-router",
+    "angular-translate"
   ]
 
 };
@@ -125,13 +126,6 @@ gulp.task('ts', function(done) {
           .pipe(gulp.dest(config.dest + '/js'));
 });
 
-gulp.task('templates', function(done) {
-  return gulp
-          .src(config.src + "/**/*.tpl")
-          .pipe(inlineAngularTemplates(config.dest + "/index.html", {base: "src/"}))
-          .pipe(gulp.dest(config.dest + "/"));
-});
-
 gulp.task("assets", function(){
   return gulp.src( config.src + "/public/**/*" )
              .pipe( gulp.dest(config.dest + "/") )
@@ -162,6 +156,13 @@ gulp.task('index', function(done) {
   ;
 
 });
+
+gulp.task('templates', gulp.series("index", function(done) {
+  return gulp
+    .src([config.src + "/**/*.html", '!' + config.index])
+    .pipe(inlineAngularTemplates(config.dest + "/index.html", {base: "src/"}))
+    .pipe(gulp.dest(config.dest + "/"));
+}));
 
 gulp.task("watch", function(done){
   gulp.watch(config.src + "/**/*.ts", gulp.series("ts"));

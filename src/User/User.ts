@@ -24,7 +24,7 @@ export default class UserModule {
 
 class UserLoginComponent implements ng.IComponentOptions {
     public transclude: boolean = true;
-    public templateUrl: string = "User/login.html.tpl";
+    public templateUrl: string = "User/login.html";
     public controller : any = UserLoginComponentController;
     public bindings: any = {
 
