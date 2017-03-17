@@ -1,9 +1,23 @@
-<div class="container">
+<div class="container user-module">
     <div class="col-sm-6 col-sm-offset-3">
-        <h3>{{ 'pleaseLogin'|translate }}</h3>
-        <form class="">
-            <div class="form-group">
-
+        <form ng-submit="$ctrl.submit()">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{ 'pleaseLogin'|translate }}
+                </div>
+                <div class="panel-body">
+                    Panel content
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3">
+                            <button class="btn btn-block btn-primary">Login</button>
+                        </div>
+                    </div>
+                    <div class="forgot-password">
+                        <a href="">Forgot your password?</a>
+                    </div>
+                </div>
             </div>
         </form>
     </div>

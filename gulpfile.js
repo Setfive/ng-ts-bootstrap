@@ -64,9 +64,12 @@ function filterVendors(paths, file){
 gulp.task('less', function(done) {
   return gulp
     .src(config.src + "/**/*.less")
+    .pipe(plugins.debug())
     .pipe(plugins.less())
     .pipe(plugins.rename(function(path) {
-      path.basename = path.dirname.toLowerCase() + "_" + path.basename;
+      if(path.dirname.toLowerCase() != ".") {
+        path.basename = path.dirname.toLowerCase() + "_" + path.basename;
+      }
     }))
     .pipe(plugins.flatten())
     .pipe(gulp.dest(config.dest + '/css'));
@@ -167,7 +170,7 @@ gulp.task('templates', gulp.series("index", function(done) {
 gulp.task("watch", function(done){
   gulp.watch(config.src + "/**/*.ts", gulp.series("ts"));
   gulp.watch(config.src + "/**/*.less", gulp.series("less"));
-  gulp.watch(config.src + "/**/*.tpl", gulp.series("index", "templates"));
+  gulp.watch(config.src + "/**/*.html", gulp.series("templates"));
 
   return new Promise(function (resolve, reject) {
 

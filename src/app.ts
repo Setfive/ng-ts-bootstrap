@@ -2,6 +2,7 @@ import * as angular from "angular";
 import "angular-ui-router";
 import UserModule from "./User/User";
 import "angular-translate";
+import Api from "./libs/Api"
 
 UserModule.configure();
 
@@ -14,7 +15,11 @@ angular
         $translateProvider.translations('en', {
             'pleaseLogin': 'Please Login',
         });
-        
+
+        // TODO: Need to add ngSanitize to support this
+        // $translateProvider.useSanitizeValueStrategy('sanitize');
+        $translateProvider.useSanitizeValueStrategy("escape");
         $translateProvider.preferredLanguage('en');
     })
+    .service("Api", Api)
 ;

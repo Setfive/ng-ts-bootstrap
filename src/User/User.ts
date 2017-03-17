@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import * as angular from "angular";
+import Api from "../libs/Api";
 
 export default class UserModule {
 
@@ -32,5 +33,13 @@ class UserLoginComponent implements ng.IComponentOptions {
 }
 
 class UserLoginComponentController {
+    static $inject = ["Api"];
+
+    private api : Api;
+
+    constructor(api: Api){
+        this.api = api;
+    }
+
 
 }
