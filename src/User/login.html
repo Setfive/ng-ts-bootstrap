@@ -1,32 +1,38 @@
 <div class="container user-module">
     <div class="col-sm-6 col-sm-offset-3">
 
-            <div class="panel panel-default panel-login">
+            <div class="panel panel-primary panel-login">
                 <div class="panel-heading">
                     {{ 'pleaseLogin'|translate }}
                 </div>
                 <div class="panel-body">
                     <form ng-submit="$ctrl.submit()">
+                        <div ng-class="'form-group ' + $ctrl.errorClasses.username">
+                            <label for="email">Email Address</label>
+                            <div class="alert alert-danger input-error">Please enter your email address.</div>
+                            <input id="email" type="text" class="form-control" placeholder="" ng-model="$ctrl.credentials.username" />
+                        </div>
 
-                    <div class="form-group">
-                        <label for="email">Your Email Address</label>
-                        <input id="email" type="text" class="form-control" placeholder="" />
-                    </div>
+                        <div ng-class="'form-group ' + $ctrl.errorClasses.password">
+                            <label for="password">Password</label>
+                            <div class="alert alert-danger input-error">Please enter your password.</div>
+                            <input id="password" type="password" class="form-control" placeholder="" ng-model="$ctrl.credentials.password" />
+                        </div>
 
-                    <div class="form-group">
-                        <label for="password">Your Password</label>
-                        <input id="password" type="password" class="form-control" placeholder="" />
-                    </div>
+                        <div class="row">
+                            <div class="col-sm-6 col-sm-offset-6">
+                                <button type="submit" ng-if="$ctrl.isLoading == false"
+                                        class="btn btn-block btn-primary">{{ 'login'|translate }}</button>
 
-                    <div class="row">
-                        <div class="col-sm-6 col-sm-offset-6">
-                            <button class="btn btn-block btn-primary">{{ 'login'|translate }}</button>
+                                <div ng-if="$ctrl.isLoading == true" class="text-center">
+                                    <img class="inline-loader" src="images/inline_loader.gif" />
+                                </div>
 
-                            <div class="forgot-password">
-                                <a href="">{{ 'Forgot your password?'|translate }}</a>
+                                <div class="forgot-password">
+                                    <a href="">{{ 'Forgot your password?'|translate }}</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </form>
                 </div>
             </div>
