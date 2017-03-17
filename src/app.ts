@@ -14,7 +14,7 @@ angular
         $translateProvider.translations('en', {
             'pleaseLogin': 'Please Login',
         });
-
+        
         $translateProvider.preferredLanguage('en');
     })
 ;

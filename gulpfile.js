@@ -49,7 +49,7 @@ const config = {
   browserifyLibs: [
     "angular",
     "angular-ui-router",
-    "angular-translate"
+    "angular-translate",
   ]
 
 };

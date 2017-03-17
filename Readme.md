@@ -33,3 +33,6 @@ php -S localhost:8000
 ```
 python -mSimpleHTTPServer
 ```
+
+## Some things of note...
+
