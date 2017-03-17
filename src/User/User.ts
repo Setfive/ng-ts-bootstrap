@@ -30,9 +30,10 @@ class UserLoginComponent implements ng.IComponentOptions {
 }
 
 class UserLoginComponentController {
-    static $inject = ["Api"];
+    static $inject = ["Api", "$state"];
 
     private api : Api;
+    private $state: ng.ui.IStateService;
 
     public credentials : Credentials = new Credentials();
 
@@ -42,9 +43,11 @@ class UserLoginComponentController {
     };
 
     public isLoading : boolean = false;
+    public loginResult : string = null;
 
-    constructor(api: Api){
+    constructor(api: Api, $state : ng.ui.IStateService){
         this.api = api;
+        this.$state = $state;
     }
 
     public submit() : void {
@@ -52,6 +55,7 @@ class UserLoginComponentController {
 
         this.errorClasses["username"] = "";
         this.errorClasses["password"] = "";
+        this.loginResult = null;
 
         ["username", "password"].forEach(f => {
             if(this.credentials.get(f).length == 0){
@@ -62,7 +66,16 @@ class UserLoginComponentController {
 
         if(error == false){
             this.isLoading = true;
-            this.api.login(this.credentials);
+            this.api.login(this.credentials)
+                .then(result => {
+                    this.isLoading = false;
+                    if(result.isSuccess){
+                        this.$state.go("dashboard");
+                        console.log("lets go!");
+                    }else{
+                        this.loginResult = result.msg;
+                    }
+            });
         }
     }
 

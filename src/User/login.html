@@ -19,6 +19,10 @@
                             <input id="password" type="password" class="form-control" placeholder="" ng-model="$ctrl.credentials.password" />
                         </div>
 
+                        <div class="form-group" ng-if="$ctrl.loginResult">
+                            <div class="alert alert-danger text-center" ng-bind="$ctrl.loginResult"></div>
+                        </div>
+
                         <div class="row">
                             <div class="col-sm-6 col-sm-offset-6">
                                 <button type="submit" ng-if="$ctrl.isLoading == false"

@@ -64,7 +64,6 @@ function filterVendors(paths, file){
 gulp.task('less', function(done) {
   return gulp
     .src(config.src + "/**/*.less")
-    .pipe(plugins.debug())
     .pipe(plugins.less())
     .pipe(plugins.rename(function(path) {
       if(path.dirname.toLowerCase() != ".") {
