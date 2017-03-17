@@ -1,24 +1,34 @@
 <div class="container user-module">
     <div class="col-sm-6 col-sm-offset-3">
-        <form ng-submit="$ctrl.submit()">
-            <div class="panel panel-default">
+
+            <div class="panel panel-default panel-login">
                 <div class="panel-heading">
                     {{ 'pleaseLogin'|translate }}
                 </div>
                 <div class="panel-body">
-                    Panel content
-                </div>
-                <div class="panel-footer">
+                    <form ng-submit="$ctrl.submit()">
+
+                    <div class="form-group">
+                        <label for="email">Your Email Address</label>
+                        <input id="email" type="text" class="form-control" placeholder="" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Your Password</label>
+                        <input id="password" type="password" class="form-control" placeholder="" />
+                    </div>
+
                     <div class="row">
-                        <div class="col-sm-6 col-sm-offset-3">
-                            <button class="btn btn-block btn-primary">Login</button>
+                        <div class="col-sm-6 col-sm-offset-6">
+                            <button class="btn btn-block btn-primary">{{ 'login'|translate }}</button>
+
+                            <div class="forgot-password">
+                                <a href="">{{ 'Forgot your password?'|translate }}</a>
+                            </div>
                         </div>
                     </div>
-                    <div class="forgot-password">
-                        <a href="">Forgot your password?</a>
-                    </div>
+                    </form>
                 </div>
             </div>
-        </form>
     </div>
 </div>
