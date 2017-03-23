@@ -119,7 +119,7 @@ gulp.task('ts', function(done) {
     b.external(lib);
   });
 
-  return b.plugin('tsify', {target: 'es6'})
+  return b.plugin('tsify', {target: 'ES5'})
           .bundle()
           .on('error', console.error)
           .pipe(source("./app.ts"))
