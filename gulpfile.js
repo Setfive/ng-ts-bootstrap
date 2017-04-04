@@ -151,9 +151,10 @@ gulp.task('index', function(done) {
     ;
 
   const mergedAssets = merge2(_.flatten(copiedVendorAssets), gulp.src(config.dest + '/css/**/*'), jsFiles);
-
+  const tag = "?v=" + Date.now();
+  
   return gulp.src(config.index)
-             .pipe( plugins.inject(mergedAssets, {ignorePath: ["/web"]}) )
+             .pipe( plugins.inject(mergedAssets, {ignorePath: ["/web"], addSuffix: tag}) )
              .pipe( gulp.dest(config.dest + "/") )
   ;
 
