@@ -9,7 +9,7 @@ sudo npm rm --global gulp
 
 Then install gulp-cli latest:
 ```
-sudo install rm --global gulp-cli
+sudo npm install --global gulp-cli
 ```
 
 And finally install the local dependencies:
