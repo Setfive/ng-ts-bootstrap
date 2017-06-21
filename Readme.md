@@ -1,3 +1,9 @@
+## About
+This is a skeleton project to build an Angular 1.5+ project written in Typescript. 
+It uses gulp to build and browserify with tsify to transpile Typescript into vanilla JavaScript.
+
+**Note**: This is using Gulp4 which is still in beta.  
+
 ## Setup
 
 First, blow away any old installed gulps:
